@@ -3,7 +3,6 @@ package libs
 import (
 	_ "embed"
 	"encoding/json"
-	sumotf "github.com/SumoLogic/terraform-provider-sumologic/sumologic"
 	"strings"
 	"text/template"
 )
@@ -26,18 +25,18 @@ func DashboardTemplate() (*template.Template, error) {
 }
 
 type Dashboard struct {
-	Type             string                `json:"type"`
-	Name             string                `json:"name"`
-	Description      string                `json:"description"`
-	Title            string                `json:"title"`
-	Theme            string                `json:"theme"`
-	TopologyLabelMap *sumotf.TopologyLabel `json:"topologyLabelMap"`
-	RefreshInterval  int                   `json:"refreshInterval"`
-	TimeRange        TimeRange             `json:"timeRange"`
-	Layout           Layout                `json:"layout"`
-	Panels           []Panels              `json:"panels"`
-	Variables        []Variables           `json:"variables"`
-	ColoringRules    []ColoringRule        `json:"coloringRules"`
+	Type             string         `json:"type"`
+	Name             string         `json:"name"`
+	Description      string         `json:"description"`
+	Title            string         `json:"title"`
+	Theme            string         `json:"theme"`
+	TopologyLabelMap TopologyLabel  `json:"topologyLabelMap"`
+	RefreshInterval  int            `json:"refreshInterval"`
+	TimeRange        TimeRange      `json:"timeRange"`
+	Layout           Layout         `json:"layout"`
+	Panels           []Panels       `json:"panels"`
+	Variables        []Variables    `json:"variables"`
+	ColoringRules    []ColoringRule `json:"coloringRules"`
 }
 
 func (d Dashboard) ResourceName() string {
@@ -144,4 +143,8 @@ type ColorThreshold struct {
 	Color string  `json:"color"`
 	Min   float64 `json:"min,omitempty"`
 	Max   float64 `json:"max,omitempty"`
+}
+
+type TopologyLabel struct {
+	Data map[string][]string `json:"data"`
 }
