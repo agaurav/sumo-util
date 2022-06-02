@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/buger/jsonparser"
-	"github.com/kr/pretty"
 	"io/ioutil"
 	"path/filepath"
 )
@@ -47,7 +46,6 @@ func convertDashboardJSONToTF(jsonBytes []byte, outFile string) error {
 	dashObj := Dashboard{}
 
 	err := json.Unmarshal(jsonBytes, &dashObj)
-	pretty.Println(dashObj)
 
 	if err != nil {
 		return err
