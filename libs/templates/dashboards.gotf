@@ -1,0 +1,130 @@
+resource "sumologic_dashboard" "tf_{{.ResourceName}}" {
+    title            = "{{.Title}}"
+    description      = "{{.Description}}"
+    refresh_interval = "{{.RefreshInterval}}"
+    theme            = "{{.Theme}}"
+
+    {{ with $tr := .TimeRange }}
+{{/*    {{ if or (eq $.Type "BeginBoundedTimeRange") (eq $.Type "RelativeTimeRangeBoundary") }}*/}}
+    time_range {
+        {{- if eq $tr.Type "BeginBoundedTimeRange" }}
+        begin_bounded_time_range {
+            from {
+                {{- if eq $tr.From.Type "LiteralTimeRangeBoundary" }}
+                literal_time_range {
+                    range_name = "{{$tr.From.RangeName}}"
+                }
+                {{end}}
+                {{- if eq $tr.From.Type "RelativeTimeRangeBoundary" }}
+                relative_time_range {
+                    relative_time = "-{{$tr.From.RelativeTime}}"
+                }
+                {{end}}
+            }
+        }
+        {{end}}
+        {{- if eq $tr.Type "CompleteLiteralTimeRange" }}
+        complete_literal_time_range {
+            range_name = "{{$tr.From.RangeName}}"
+        }
+        {{end}}
+    }
+    {{end}}
+{{/*    {{end}}*/}}
+
+    topology_label_map {
+        {{ range $key, $value := .TopologyLabelMap.Data }}
+        data {
+            label  = "{{ $key }}"
+            values = [
+                {{range $index, $element := $value }}{{if $index }} {{printf ","}}{{end}} "{{$element}}" {{end}}
+            ]
+        }
+        {{ end }}
+    }
+
+
+    {{range $panel := .Panels}}
+    ## search panel - log query
+    {{if eq $panel.PanelType "SumoSearchPanel"}}
+    panel {
+        sumo_search_panel {
+            key             = "{{$panel.Key}}"
+            title           = "{{$panel.Title}}"
+            description     = "{{$panel.Description}}"
+            # stacked time series
+            visual_settings = jsonencode(
+                {{$panel.VisualSettings}}
+            )
+            keep_visual_settings_consistent_with_parent = true
+{{range $index, $el := $panel.Queries}}
+            query {
+                query_string = <<QUERY
+{{$el.QueryString}}
+QUERY
+                query_type   = "{{$el.QueryType}}"
+                query_key    = "{{$el.QueryKey}}"
+//                add metric query support
+
+            }
+{{end}}
+            {{ with $tr := $panel.TimeRange }}
+            time_range {
+                {{- if eq $tr.Type "BeginBoundedTimeRange" }}
+                begin_bounded_time_range {
+                    from {
+                        {{- if eq $tr.From.Type "LiteralTimeRangeBoundary" }}
+                        literal_time_range {
+                            range_name = "{{$tr.From.RangeName}}"
+                        }
+                        {{end}}
+                        {{- if eq $tr.From.Type "RelativeTimeRangeBoundary" }}
+                        relative_time_range {
+                            relative_time = "{{$tr.From.RelativeTime}}"
+                        }
+                        {{end}}
+                    }
+                }
+                {{end}}
+                {{- if eq $.Type "CompleteLiteralTimeRange" }}
+                complete_literal_time_range {
+                    range_name = "{{.From.RangeName}}"
+                }
+                {{end}}
+            }
+            {{end}}
+        }
+    }
+    {{end}}
+    {{end}}
+
+    ## layout
+    layout {
+        grid {
+            {{range $lt := .Layout.LayoutStructures}}
+            layout_structure {
+                key       = "{{$lt.Key}}"
+                structure = {{ $.JSONEscape $lt.Structure}}
+            }
+            {{end}}
+        }
+    }
+
+    {{ range $el := .Variables }}
+
+    variable {
+        name          = "{{ $el.Name }}"
+        display_name  = "{{ $el.DisplayName }}"
+        default_value = "{{ $el.DefaultValue }}"
+        source_definition {
+            log_query_variable_source_definition {
+                query = "{{$el.SourceDefinition.Query}}"
+                field = "{{ $el.SourceDefinition.Field }}"
+            }
+        }
+        allow_multi_select = "{{ $el.AllowMultiSelect }}"
+        include_all_option = "{{ $el.IncludeAllOption }}"
+        hide_from_ui       = "{{ $el.HideFromUI }}"
+    }
+    {{ end }}
+}

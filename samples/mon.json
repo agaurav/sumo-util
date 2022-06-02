@@ -1,0 +1,43 @@
+{
+  "name": "TK missing data",
+  "description": "",
+  "type": "MonitorsLibraryMonitorExport",
+  "monitorType": "Metrics",
+  "evaluationDelay": "0m",
+  "alertName": null,
+  "runAs": null,
+  "notificationGroupFields": [],
+  "queries": [
+    {
+      "rowId": "A",
+      "query": "_sourcecategory=search metric=CPU_User "
+    }
+  ],
+  "triggers": [
+    {
+      "detectionMethod": "StaticCondition",
+      "triggerType": "MissingData",
+      "timeRange": "-5m",
+      "threshold": 0,
+      "thresholdType": "LessThanOrEqual",
+      "field": null,
+      "occurrenceType": "MissingData",
+      "triggerSource": "AllTimeSeries"
+    },
+    {
+      "detectionMethod": "StaticCondition",
+      "triggerType": "ResolvedMissingData",
+      "timeRange": "-5m",
+      "threshold": 0,
+      "thresholdType": "GreaterThan",
+      "field": null,
+      "occurrenceType": "MissingData",
+      "triggerSource": "AllTimeSeries"
+    }
+  ],
+  "notifications": [],
+  "isDisabled": false,
+  "groupNotifications": true,
+  "playbook": "",
+  "sloId": null
+}

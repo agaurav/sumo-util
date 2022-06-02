@@ -1,0 +1,370 @@
+{
+    "type": "DashboardV2SyncDefinition",
+    "name": "SLO-CloudCollector Ingest Lag",
+    "description": "Tracks 95 objective: Track number of seconds a message is delayed in the ingest pipeline",
+    "title": "SLO-CloudCollector Ingest Lag",
+    "theme": "Light",
+    "topologyLabelMap": {
+        "data": {
+            "service": [
+                "cloudcollector"
+            ]
+        }
+    },
+    "refreshInterval": 300,
+    "timeRange": {
+        "type": "BeginBoundedTimeRange",
+        "from": {
+            "type": "LiteralTimeRangeBoundary",
+            "rangeName": "today"
+        },
+        "to": null
+    },
+    "layout": {
+        "layoutType": "Grid",
+        "layoutStructures": [
+            {
+                "key": "gauge-today",
+                "structure": "{\"height\":6,\"width\":6,\"x\":0,\"y\":0}"
+            },
+            {
+                "key": "gauge-week",
+                "structure": "{\"height\":6,\"width\":6,\"x\":0,\"y\":6}"
+            },
+            {
+                "key": "gauge-month",
+                "structure": "{\"height\":6,\"width\":6,\"x\":0,\"y\":12}"
+            },
+            {
+                "key": "hourly-burn-rate",
+                "structure": "{\"height\":6,\"width\":18,\"x\":6,\"y\":0}"
+            },
+            {
+                "key": "burn-trend",
+                "structure": "{\"height\":6,\"width\":18,\"x\":6,\"y\":6}"
+            },
+            {
+                "key": "budget-left",
+                "structure": "{\"height\":6,\"width\":18,\"x\":6,\"y\":12}"
+            },
+            {
+                "key": "text-panel-config",
+                "structure": "{\"height\":6,\"width\":12,\"x\":0,\"y\":18}"
+            },
+            {
+                "key": "text-panel-details",
+                "structure": "{\"height\":6,\"width\":12,\"x\":12,\"y\":18}"
+            },
+            {
+                "key": "breakdown",
+                "structure": "{\"height\":10,\"width\":24,\"x\":0,\"y\":24}"
+            }
+        ]
+    },
+    "panels": [
+        {
+            "id": null,
+            "key": "gauge-today",
+            "title": "Today's Availability",
+            "visualSettings": "{\"general\":{\"displayType\":\"default\",\"mode\":\"singleValueMetrics\",\"type\":\"svp\"},\"series\":{},\"svp\":{\"gauge\":{\"show\":true},\"hideData\":false,\"hideLabel\":false,\"label\":\"Availability (%)\",\"labelFontSize\":14,\"noDataString\":\"No data\",\"option\":\"Average\",\"rounding\":2,\"sparkline\":{\"show\":false},\"thresholds\":[{\"color\":\"#bf2121\",\"from\":0,\"to\":95},{\"color\":\"#DFBE2E\",\"from\":95,\"to\":97.5},{\"color\":\"#16943e\",\"from\":97.5,\"to\":100.1}],\"useBackgroundColor\":false,\"useNoData\":false,\"valueFontSize\":24},\"title\":{\"fontSize\":14}}",
+            "keepVisualSettingsConsistentWithParent": true,
+            "panelType": "SumoSearchPanel",
+            "queries": [
+                {
+                    "transient": false,
+                    "queryString": "_view=slogen_tf_cloudcollector_cc_ingest_lag_v2 | where (\"{{customerID}}\"=\"*\" or customerID=\"{{customerID}}\") and (\"{{deployment}}\"=\"*\" or deployment=\"{{deployment}}\") and (\"{{cluster}}\"=\"*\" or cluster=\"{{cluster}}\") \n| timeslice 1m \n| sum(sliceGoodCount) as timesliceGoodCount, sum(sliceTotalCount) as timesliceTotalCount by _timeslice\n| fillmissing timeslice(1m)\n| if(timesliceTotalCount ==0, 1,(timesliceGoodCount/timesliceTotalCount))  as timesliceRatio\n| order by _timeslice asc\n| if(timesliceRatio >= 0.9, 1,0) as sliceHealthy\n| 1 as timesliceOne\n| sum(sliceHealthy) as healthySlices, sum(timesliceOne) as totalSlices\n| (healthySlices/totalSlices)*100 as Availability\n| fields Availability\n\n",
+                    "queryType": "Logs",
+                    "queryKey": "A",
+                    "metricsQueryMode": null,
+                    "metricsQueryData": null,
+                    "tracesQueryData": null,
+                    "spansQueryData": null,
+                    "parseMode": "Auto",
+                    "timeSource": "Message",
+                    "outputCardinalityLimit": null
+                }
+            ],
+            "description": "#good-requests / #requests since start of day",
+            "timeRange": {
+                "type": "BeginBoundedTimeRange",
+                "from": {
+                    "type": "LiteralTimeRangeBoundary",
+                    "rangeName": "today"
+                },
+                "to": null
+            },
+            "coloringRules": null,
+            "linkedDashboards": []
+        },
+        {
+            "id": null,
+            "key": "gauge-week",
+            "title": "Week's Availability",
+            "visualSettings": "{\"general\":{\"displayType\":\"default\",\"mode\":\"singleValueMetrics\",\"type\":\"svp\"},\"series\":{},\"svp\":{\"gauge\":{\"show\":true},\"hideData\":false,\"hideLabel\":false,\"label\":\"Availability (%)\",\"labelFontSize\":14,\"noDataString\":\"No data\",\"option\":\"Average\",\"rounding\":2,\"sparkline\":{\"show\":false},\"thresholds\":[{\"color\":\"#bf2121\",\"from\":0,\"to\":95},{\"color\":\"#DFBE2E\",\"from\":95,\"to\":97.5},{\"color\":\"#16943e\",\"from\":97.5,\"to\":100.1}],\"useBackgroundColor\":false,\"useNoData\":false,\"valueFontSize\":24},\"title\":{\"fontSize\":14}}",
+            "keepVisualSettingsConsistentWithParent": true,
+            "panelType": "SumoSearchPanel",
+            "queries": [
+                {
+                    "transient": false,
+                    "queryString": "_view=slogen_tf_cloudcollector_cc_ingest_lag_v2 | where (\"{{customerID}}\"=\"*\" or customerID=\"{{customerID}}\") and (\"{{deployment}}\"=\"*\" or deployment=\"{{deployment}}\") and (\"{{cluster}}\"=\"*\" or cluster=\"{{cluster}}\") \n| timeslice 1m \n| sum(sliceGoodCount) as timesliceGoodCount, sum(sliceTotalCount) as timesliceTotalCount by _timeslice\n| fillmissing timeslice(1m)\n| if(timesliceTotalCount ==0, 1,(timesliceGoodCount/timesliceTotalCount))  as timesliceRatio\n| order by _timeslice asc\n| if(timesliceRatio >= 0.9, 1,0) as sliceHealthy\n| 1 as timesliceOne\n| sum(sliceHealthy) as healthySlices, sum(timesliceOne) as totalSlices\n| (healthySlices/totalSlices)*100 as Availability\n| fields Availability\n\n",
+                    "queryType": "Logs",
+                    "queryKey": "A",
+                    "metricsQueryMode": null,
+                    "metricsQueryData": null,
+                    "tracesQueryData": null,
+                    "spansQueryData": null,
+                    "parseMode": "Auto",
+                    "timeSource": "Message",
+                    "outputCardinalityLimit": null
+                }
+            ],
+            "description": "#good-requests / #requests since start of week",
+            "timeRange": {
+                "type": "BeginBoundedTimeRange",
+                "from": {
+                    "type": "LiteralTimeRangeBoundary",
+                    "rangeName": "week"
+                },
+                "to": null
+            },
+            "coloringRules": null,
+            "linkedDashboards": []
+        },
+        {
+            "id": null,
+            "key": "gauge-month",
+            "title": "Month's Availability",
+            "visualSettings": "{\"general\":{\"displayType\":\"default\",\"mode\":\"singleValueMetrics\",\"type\":\"svp\"},\"series\":{},\"svp\":{\"gauge\":{\"show\":true},\"hideData\":false,\"hideLabel\":false,\"label\":\"Availability (%)\",\"labelFontSize\":14,\"noDataString\":\"No data\",\"option\":\"Average\",\"rounding\":2,\"sparkline\":{\"show\":false},\"thresholds\":[{\"color\":\"#bf2121\",\"from\":0,\"to\":95},{\"color\":\"#DFBE2E\",\"from\":95,\"to\":97.5},{\"color\":\"#16943e\",\"from\":97.5,\"to\":100.1}],\"useBackgroundColor\":false,\"useNoData\":false,\"valueFontSize\":24},\"title\":{\"fontSize\":14}}",
+            "keepVisualSettingsConsistentWithParent": true,
+            "panelType": "SumoSearchPanel",
+            "queries": [
+                {
+                    "transient": false,
+                    "queryString": "_view=slogen_tf_cloudcollector_cc_ingest_lag_v2 | where (\"{{customerID}}\"=\"*\" or customerID=\"{{customerID}}\") and (\"{{deployment}}\"=\"*\" or deployment=\"{{deployment}}\") and (\"{{cluster}}\"=\"*\" or cluster=\"{{cluster}}\") \n| timeslice 1m \n| sum(sliceGoodCount) as timesliceGoodCount, sum(sliceTotalCount) as timesliceTotalCount by _timeslice\n| fillmissing timeslice(1m)\n| if(timesliceTotalCount ==0, 1,(timesliceGoodCount/timesliceTotalCount))  as timesliceRatio\n| order by _timeslice asc\n| if(timesliceRatio >= 0.9, 1,0) as sliceHealthy\n| 1 as timesliceOne\n| sum(sliceHealthy) as healthySlices, sum(timesliceOne) as totalSlices\n| (healthySlices/totalSlices)*100 as Availability\n| fields Availability\n\n",
+                    "queryType": "Logs",
+                    "queryKey": "A",
+                    "metricsQueryMode": null,
+                    "metricsQueryData": null,
+                    "tracesQueryData": null,
+                    "spansQueryData": null,
+                    "parseMode": "Auto",
+                    "timeSource": "Message",
+                    "outputCardinalityLimit": null
+                }
+            ],
+            "description": "#good-requests / #requests since start of month",
+            "timeRange": {
+                "type": "BeginBoundedTimeRange",
+                "from": {
+                    "type": "LiteralTimeRangeBoundary",
+                    "rangeName": "month"
+                },
+                "to": null
+            },
+            "coloringRules": null,
+            "linkedDashboards": []
+        },
+        {
+            "id": null,
+            "key": "hourly-burn-rate",
+            "title": "Hourly Burn Rate",
+            "visualSettings": "{\"axes\":{\"axisX\":{\"title\":\"\"},\"axisY\":{\"title\":\"hourlyBurnRate\",\"unit\":{\"isCustom\":false,\"value\":\"%\"}}},\"color\":{\"family\":\"Diverging 2\"},\"general\":{\"displayType\":\"default\",\"fillOpacity\":1,\"mode\":\"timeSeries\",\"type\":\"column\"},\"overrides\":[{\"properties\":{\"color\":\"#7959b3\",\"fillOpacity\":0.8,\"name\":\"today\"},\"queries\":[],\"series\":[\"hourlyBurnRate\"]},{\"properties\":{\"color\":\"#4ea0bc\",\"fillOpacity\":0.7,\"name\":\"today-24h\"},\"queries\":[],\"series\":[\"hourlyBurnRate_1d\"]}],\"series\":{},\"title\":{\"fontSize\":14}}",
+            "keepVisualSettingsConsistentWithParent": true,
+            "panelType": "SumoSearchPanel",
+            "queries": [
+                {
+                    "transient": false,
+                    "queryString": "_view=slogen_tf_cloudcollector_cc_ingest_lag_v2 | where (\"{{customerID}}\"=\"*\" or customerID=\"{{customerID}}\") and (\"{{deployment}}\"=\"*\" or deployment=\"{{deployment}}\") and (\"{{cluster}}\"=\"*\" or cluster=\"{{cluster}}\") \n| timeslice 1m \n| sum(sliceGoodCount) as timesliceGoodCount, sum(sliceTotalCount) as timesliceTotalCount by _timeslice\n| fillmissing timeslice(1m)\n| if(timesliceTotalCount ==0, 1,(timesliceGoodCount/timesliceTotalCount))  as timesliceRatio\n| if(timesliceRatio >= 0.9, 1,0) as sliceHealthy\n| 1 as timesliceOne | _timeslice as _messagetime \n| timeslice 60m \n| sum(sliceHealthy) as healthySlices, sum(timesliceOne) as totalSlices by _timeslice\n| order by _timeslice asc\n| ((1 - healthySlices/totalSlices)/(1-0.95)) as hourlyBurnRate\n| fields _timeslice, hourlyBurnRate | compare timeshift 1d\n\n",
+                    "queryType": "Logs",
+                    "queryKey": "A",
+                    "metricsQueryMode": null,
+                    "metricsQueryData": null,
+                    "tracesQueryData": null,
+                    "spansQueryData": null,
+                    "parseMode": "Auto",
+                    "timeSource": "Message",
+                    "outputCardinalityLimit": null
+                }
+            ],
+            "description": "(ErrorsObserved)/(ErrorBudget) for the hour buckets where ErrorBudget = (1-SLO)*TotalRequests",
+            "timeRange": {
+                "type": "BeginBoundedTimeRange",
+                "from": {
+                    "type": "RelativeTimeRangeBoundary",
+                    "relativeTime": "-1d"
+                },
+                "to": null
+            },
+            "coloringRules": null,
+            "linkedDashboards": []
+        },
+        {
+            "id": null,
+            "key": "burn-trend",
+            "title": "Burn rate trend compared to last 7 days  (upto current time of the day)",
+            "visualSettings": "{\"general\":{\"displayType\":\"default\",\"mode\":\"honeyComb\",\"type\":\"honeyComb\"},\"honeyComb\":{\"aggregationType\":\"avg\",\"groupBy\":[],\"shape\":\"hexagon\",\"thresholds\":[{\"color\":\"#16943e\",\"from\":0,\"to\":50},{\"color\":\"#ebc034\",\"from\":50,\"to\":200},{\"color\":\"#c40e20\",\"from\":200,\"to\":10000}]},\"series\":{},\"title\":{\"fontSize\":14}}",
+            "keepVisualSettingsConsistentWithParent": true,
+            "panelType": "SumoSearchPanel",
+            "queries": [
+                {
+                    "transient": false,
+                    "queryString": "_view=slogen_tf_cloudcollector_cc_ingest_lag_v2 | where (\"{{customerID}}\"=\"*\" or customerID=\"{{customerID}}\") and (\"{{deployment}}\"=\"*\" or deployment=\"{{deployment}}\") and (\"{{cluster}}\"=\"*\" or cluster=\"{{cluster}}\") \n| timeslice 1m \n| sum(sliceGoodCount) as timesliceGoodCount, sum(sliceTotalCount) as timesliceTotalCount by _timeslice\n| fillmissing timeslice(1m)\n| if(timesliceTotalCount ==0, 1,(timesliceGoodCount/timesliceTotalCount))  as timesliceRatio\n| if(timesliceRatio >= 0.9, 1,0) as sliceHealthy\n| 1 as timesliceOne\n| sum(sliceHealthy) as totalGood, sum(timesliceOne) as totalCount \n| ((1 - totalGood/totalCount)/(1-0.95))*100 as BurnRate | fields BurnRate | compare timeshift 1d 7 \n| fields BurnRate_7d,BurnRate_6d,BurnRate_5d,BurnRate_4d,BurnRate_3d,BurnRate_2d,BurnRate_1d,BurnRate\n\n",
+                    "queryType": "Logs",
+                    "queryKey": "A",
+                    "metricsQueryMode": null,
+                    "metricsQueryData": null,
+                    "tracesQueryData": null,
+                    "spansQueryData": null,
+                    "parseMode": "Auto",
+                    "timeSource": "Message",
+                    "outputCardinalityLimit": null
+                }
+            ],
+            "description": "Today's burn rate (so far) along with last 7 days (till the same time as today)",
+            "timeRange": {
+                "type": "BeginBoundedTimeRange",
+                "from": {
+                    "type": "LiteralTimeRangeBoundary",
+                    "rangeName": "today"
+                },
+                "to": null
+            },
+            "coloringRules": null,
+            "linkedDashboards": []
+        },
+        {
+            "id": null,
+            "key": "budget-left",
+            "title": "Budget remaining",
+            "visualSettings": "{\"axes\":{\"axisX\":{\"labelFontSize\":12,\"title\":\"\",\"titleFontSize\":12},\"axisY\":{\"labelFontSize\":12,\"logarithmic\":false,\"title\":\"\",\"titleFontSize\":12,\"unit\":{\"isCustom\":false,\"value\":\"%\"}}},\"color\":{\"family\":\"Categorical Default\"},\"general\":{\"displayType\":\"default\",\"lineDashType\":\"solid\",\"lineThickness\":1,\"markerSize\":5,\"markerType\":\"none\",\"mode\":\"timeSeries\",\"type\":\"line\"},\"legend\":{\"enabled\":true,\"fontSize\":12,\"maxHeight\":50,\"showAsTable\":false,\"verticalAlign\":\"bottom\",\"wrap\":true},\"overrides\":[{\"properties\":{\"color\":\"#50caf2\",\"lineDashType\":\"dash\",\"lineThickness\":1.5,\"name\":\"Forecasted Budget Remaining\",\"type\":\"line\"},\"queries\":[],\"series\":[\"budgetRemaining_predicted\"]},{\"properties\":{\"color\":\"#f7995b\",\"lineThickness\":0,\"name\":\"Budget Remaining\",\"type\":\"area\"},\"queries\":[],\"series\":[\"budgetRemaining\"]}],\"series\":{},\"title\":{\"fontSize\":14}}",
+            "keepVisualSettingsConsistentWithParent": true,
+            "panelType": "SumoSearchPanel",
+            "queries": [
+                {
+                    "transient": false,
+                    "queryString": "_view=slogen_tf_cloudcollector_cc_ingest_lag_v2 | where (\"{{customerID}}\"=\"*\" or customerID=\"{{customerID}}\") and (\"{{deployment}}\"=\"*\" or deployment=\"{{deployment}}\") and (\"{{cluster}}\"=\"*\" or cluster=\"{{cluster}}\") \n| timeslice 1m \n| sum(sliceGoodCount) as timesliceGoodCount, sum(sliceTotalCount) as timesliceTotalCount by _timeslice\n| fillmissing timeslice(1m)\n| if(timesliceTotalCount ==0, 1,(timesliceGoodCount/timesliceTotalCount))  as timesliceRatio\n| (timesliceGoodCount/timesliceTotalCount)  as timesliceRatio\n| if(timesliceRatio >= 0.9, 1,0) as sliceHealthy\n| 1 as timesliceOne | _timeslice as _messagetime \n| timeslice 60m \n| sum(sliceHealthy) as healthySlices, sum(timesliceOne) as totalSlices by _timeslice\n| healthySlices/totalSlices as tmSLO \n| (totalSlices - healthySlices) as tmBad \n| order by _timeslice asc\n| accum tmBad as runningBad  \n| toLong(formatDate(now(), \"M\")) as monthIndex\n| if(monthIndex == 12,0,1) as addToMonth \n| parseDate(format(\"2021-%d-01\",toLong(monthIndex)), \"yyyy-MM-dd\") as ym\n| parseDate(format(\"2021-%d-01\",toLong(monthIndex+addToMonth)), \"yyyy-MM-dd\") as ymNext\n| toLong(if(monthIndex == 12,31,(ymNext - ym)/(24*3600*1000))) as dayCount\n| (dayCount*24*60)*(1-0.95) as errorBudget\n| (1-runningBad/errorBudget) as budgetRemaining \n| fields _timeslice, budgetRemaining\n| predict budgetRemaining by 1h model=ar, forecast=800\n| toLong(formatDate(_timeslice, \"M\")) as tmIndex \n| toLong(formatDate(now(), \"M\")) as monthIndex\n| where  tmIndex = monthIndex | if(isNull(budgetRemaining),budgetRemaining_predicted,budgetRemaining) as budgetRemaining_predicted \n| fields _timeslice,budgetRemaining, budgetRemaining_predicted \n\n",
+                    "queryType": "Logs",
+                    "queryKey": "A",
+                    "metricsQueryMode": null,
+                    "metricsQueryData": null,
+                    "tracesQueryData": null,
+                    "spansQueryData": null,
+                    "parseMode": "Auto",
+                    "timeSource": "Message",
+                    "outputCardinalityLimit": null
+                }
+            ],
+            "description": "Error budget from start of month",
+            "timeRange": {
+                "type": "BeginBoundedTimeRange",
+                "from": {
+                    "type": "LiteralTimeRangeBoundary",
+                    "rangeName": "month"
+                },
+                "to": null
+            },
+            "coloringRules": null,
+            "linkedDashboards": []
+        },
+        {
+            "id": null,
+            "key": "breakdown",
+            "title": "SLO Breakdown",
+            "visualSettings": "{\"axes\":{\"axisX\":{\"labelFontSize\":12,\"titleFontSize\":12},\"axisY\":{\"labelFontSize\":12,\"titleFontSize\":12}},\"general\":{\"decimals\":2,\"displayType\":\"default\",\"fontSize\":16,\"mode\":\"distribution\",\"paginationPageSize\":100,\"type\":\"table\"},\"legend\":{\"enabled\":false},\"series\":{},\"title\":{\"fontSize\":24}}",
+            "keepVisualSettingsConsistentWithParent": true,
+            "panelType": "SumoSearchPanel",
+            "queries": [
+                {
+                    "transient": false,
+                    "queryString": "_view=slogen_tf_cloudcollector_cc_ingest_lag_v2 | where (\"{{cluster}}\"=\"*\" or cluster=\"{{cluster}}\") and (\"{{customerID}}\"=\"*\" or customerID=\"{{customerID}}\") and (\"{{deployment}}\"=\"*\" or deployment=\"{{deployment}}\") \n| timeslice 1m \n| sum(sliceGoodCount) as timesliceGoodCount, sum(sliceTotalCount) as timesliceTotalCount by _timeslice , customerID,deployment,cluster  \n| fillmissing timeslice(1m)\n| if(timesliceTotalCount ==0, 1,(timesliceGoodCount/timesliceTotalCount))  as timesliceRatio\n| (timesliceGoodCount/timesliceTotalCount)  as timesliceRatio\n| if(timesliceRatio >= 0.9, 1,0) as sliceHealthy\n| 1 as timesliceOne | _timeslice as _messagetime \n| sum(sliceHealthy) as healthySlices, sum(timesliceOne) as totalSlices by customerID,deployment,cluster  \n| (healthySlices/totalSlices)*100 as Availability_Percentage\n| (totalSlices - healthySlices) as badSlices\n| toLong(formatDate(now(), \"M\")) as monthIndex\n| if(monthIndex == 12,0,1) as addToMonth \n| parseDate(format(\"2021-%d-01\",toLong(monthIndex)), \"yyyy-MM-dd\") as ym\n| parseDate(format(\"2021-%d-01\",toLong(monthIndex+addToMonth)), \"yyyy-MM-dd\") as ymNext\n| toLong(if(monthIndex == 12,31,(ymNext - ym)/(24*3600*1000))) as dayCount\n| (dayCount*24*60)*(1-0.95) as errorBudget\n| (1-badSlices/errorBudget) as BudgetRemaining \n| (BudgetRemaining)*errorBudget as DowntimeRemainingInMinutes \n| DowntimeRemainingInMinutes/60 as DowntimeRemainingInHours \n| DowntimeRemainingInMinutes%60 as DowntimeRemainingMinuteModulo \n| format(\"%2.0fh%2.0fm\",DowntimeRemainingInHours,DowntimeRemainingMinuteModulo) as %\"Budget Remaining (Time)\"\n| BudgetRemaining*100 as %\"Budget Remaining (%)\"\n| order by BudgetRemaining asc\n| Availability_Percentage as %\"Availability (%)\" \n| fields  customerID,deployment,cluster,  %\"Availability (%)\", %\"Budget Remaining (%)\", %\"Budget Remaining (Time)\"\n\n",
+                    "queryType": "Logs",
+                    "queryKey": "A",
+                    "metricsQueryMode": null,
+                    "metricsQueryData": null,
+                    "tracesQueryData": null,
+                    "spansQueryData": null,
+                    "parseMode": "Auto",
+                    "timeSource": "Message",
+                    "outputCardinalityLimit": null
+                }
+            ],
+            "description": "reliability stats by fields specified in the config",
+            "timeRange": {
+                "type": "BeginBoundedTimeRange",
+                "from": {
+                    "type": "LiteralTimeRangeBoundary",
+                    "rangeName": "month"
+                },
+                "to": null
+            },
+            "coloringRules": null,
+            "linkedDashboards": []
+        },
+        {
+            "id": null,
+            "key": "text-panel-details",
+            "title": "Details",
+            "visualSettings": "{\"general\":{\"displayType\":\"default\",\"mode\":\"TextPanel\",\"type\":\"text\"},\"legend\":{\"enabled\":false},\"series\":{},\"text\":{\"backgroundColor\":\"#e4f5fa\",\"fontSize\":40,\"format\":\"markdownV2\",\"horizontalAlignment\":\"center\",\"textColor\":\"#005982\",\"verticalAlignment\":\"center\"},\"title\":{\"fontSize\":14}}",
+            "keepVisualSettingsConsistentWithParent": true,
+            "panelType": "TextPanel",
+            "text": "# Target\n**95.00 %**\n\n## Track number of seconds a message is delayed in the ingest pipeline\n\n#### **`team`**:*`collection`*  **`tier`**:*`0`*  \n"
+        },
+        {
+            "id": null,
+            "key": "text-panel-config",
+            "title": "OpenSLO config",
+            "visualSettings": "{\"general\":{\"displayType\":\"default\",\"mode\":\"TextPanel\",\"type\":\"text\"},\"legend\":{\"enabled\":false},\"series\":{},\"text\":{\"backgroundColor\":\"#e4f5fa\",\"fontSize\":20,\"format\":\"markdownV2\",\"horizontalAlignment\":\"left\",\"textColor\":\"#170546\",\"verticalAlignment\":\"top\"},\"title\":{\"fontSize\":14}}",
+            "keepVisualSettingsConsistentWithParent": true,
+            "panelType": "TextPanel",
+            "text": "``` yaml\napiVersion: openslo/v1alpha\nkind: SLO\nmetadata:\n    name: cc-ingest-lag-v2\n    displayName: CloudCollector Ingest Lag\nspec:\n    timeWindows: []\n    budgetingMethod: Timeslices\n    description: Track number of seconds a message is delayed in the ingest pipeline\n    indicator: null\n    service: cloudcollector\n    objectives:\n        - displayName: SLI to track ingest job is completed within 5 seconds for cloudcollector\n          value: 0\n          ratioMetrics:\n            good:\n                source: sumologic\n                queryType: Logs\n                query: lag_seconds <= 20\n            total:\n                source: sumologic\n                queryType: Logs\n                query: |\n                    _sourcecategory=cloudcollector DefaultPerCustomerLagTracker !CustomerLagQueryDisablingStrategy \"current lag\"\n                      | parse \"current lag: Some(*) ms,\" as lag\n                      | where lag != \"*\"\n                      | parse \"customer: *,\" as customer_id\n                      | where customer_id matches \"*\"\n                      | lag / 1000 as lag_seconds\n            incremental: true\n          target: 0.95\n          timeSliceTarget: 0.9\nlabels:\n    team: collection\n    tier: \"0\"\nfields:\n    cluster: if(isNull(cluster),\"-\",cluster)\n    customerID: customer_id\n    deployment: if(isNull(deployment),\"dev\",deployment)\nalerts:\n    burnRate:\n        - shortWindow: 10m\n          shortLimit: 14\n          longWindow: 1h\n          longLimit: 14\n          notifications:\n            - triggerFor:\n                - Warning\n                - ResolvedWarning\n              connectionType: Email\n              recipients:\n                - agaurav@sumologic.com\nviewName: slogen_tf_cloudcollector_cc_ingest_lag_v2\n\n```\n"
+        }
+    ],
+    "variables": [
+        {
+            "id": null,
+            "name": "deployment",
+            "displayName": "deployment",
+            "defaultValue": "*",
+            "sourceDefinition": {
+                "variableSourceType": "LogQueryVariableSourceDefinition",
+                "query": "_view=slogen_tf_cloudcollector_cc_ingest_lag_v2",
+                "field": "deployment"
+            },
+            "allowMultiSelect": true,
+            "includeAllOption": true,
+            "hideFromUI": false,
+            "valueType": "Any"
+        },
+        {
+            "id": null,
+            "name": "cluster",
+            "displayName": "cluster",
+            "defaultValue": "*",
+            "sourceDefinition": {
+                "variableSourceType": "LogQueryVariableSourceDefinition",
+                "query": "_view=slogen_tf_cloudcollector_cc_ingest_lag_v2",
+                "field": "cluster"
+            },
+            "allowMultiSelect": true,
+            "includeAllOption": true,
+            "hideFromUI": false,
+            "valueType": "Any"
+        },
+        {
+            "id": null,
+            "name": "customerID",
+            "displayName": "customerID",
+            "defaultValue": "*",
+            "sourceDefinition": {
+                "variableSourceType": "LogQueryVariableSourceDefinition",
+                "query": "_view=slogen_tf_cloudcollector_cc_ingest_lag_v2",
+                "field": "customerID"
+            },
+            "allowMultiSelect": true,
+            "includeAllOption": true,
+            "hideFromUI": false,
+            "valueType": "Any"
+        }
+    ],
+    "coloringRules": []
+}
