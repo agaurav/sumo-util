@@ -1,9 +1,9 @@
 package cmd
 
 import (
+	"github.com/agaurav/sumo-util/libs"
 	"github.com/spf13/cobra"
 	"os"
-	"sumo-util/libs"
 )
 
 func init() {

@@ -1,4 +1,4 @@
-module sumo-util
+module github.com/agaurav/sumo-util
 
 go 1.18
 
