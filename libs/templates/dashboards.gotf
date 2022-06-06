@@ -5,7 +5,6 @@ resource "sumologic_dashboard" "tf_{{.ResourceName}}" {
     theme            = "{{.Theme}}"
 
     {{ with $tr := .TimeRange }}
-{{/*    {{ if or (eq $.Type "BeginBoundedTimeRange") (eq $.Type "RelativeTimeRangeBoundary") }}*/}}
     time_range {
         {{- if eq $tr.Type "BeginBoundedTimeRange" }}
         begin_bounded_time_range {
@@ -30,7 +29,6 @@ resource "sumologic_dashboard" "tf_{{.ResourceName}}" {
         {{end}}
     }
     {{end}}
-{{/*    {{end}}*/}}
 
     topology_label_map {
         {{ range $key, $value := .TopologyLabelMap.Data }}
@@ -57,17 +55,44 @@ resource "sumologic_dashboard" "tf_{{.ResourceName}}" {
                 {{$panel.VisualSettings}}
             )
             keep_visual_settings_consistent_with_parent = true
-{{range $index, $el := $panel.Queries}}
+            {{range $index, $el := $panel.Queries}}
             query {
-                query_string = <<QUERY
+                query_string      = <<QUERY
 {{$el.QueryString}}
 QUERY
-                query_type   = "{{$el.QueryType}}"
-                query_key    = "{{$el.QueryKey}}"
-//                add metric query support
+                query_type        = "{{$el.QueryType}}"
+                query_key         = "{{$el.QueryKey}}"
+                {{-if ne $el.MetricsQueryMode ""}}
+                metric_query_mode = "{{$el.MetricsQueryMode}}"
+                {{end}}
 
+                {{-if or (eq $el.MetricsQueryMode "Basic") (eq $el.MetricsQueryMode "basic")}}
+                metrics_query_data {
+                    metric           = "{{$el.MetricsQueryData.Metric}}"
+                    aggregation_type = "{{el.MetricsQueryData.AggregationType}}"
+                    group_by         = "{{el.MetricsQueryData.GroupBy}}"
+                    {{- range $index, $fltr := $el.MetricsQueryData.Filters}}
+                    filter {
+                        key      = "{{$fltr.Key}}"
+                        negation = "{{$fltr.Negation}}"
+                        value    = "{{$fltr.Value}}"
+                    }
+                    {{end}}
+                    {{- range $index, $ops := $el.MetricsQueryData.Operators}}
+                    operator {
+                        name = "{{$ops.Name}}"
+                        {{- range $index, $prms := $ops.Parameters}}
+                        parameter {
+                            key   = "{{$prms.Name}}"
+                            value = "{{$prms.Value}}"
+                        }
+                        {{end}}
+                    }
+                    {{end}}
+                    {{end}}
+                }
             }
-{{end}}
+            {{end}}
             {{ with $tr := $panel.TimeRange }}
             time_range {
                 {{- if eq $tr.Type "BeginBoundedTimeRange" }}
@@ -117,10 +142,25 @@ QUERY
         display_name  = "{{ $el.DisplayName }}"
         default_value = "{{ $el.DefaultValue }}"
         source_definition {
+            {{- if eq $el.SourceDefinition.VariableSourceType "LogQueryVariableSourceDefinition" }}
             log_query_variable_source_definition {
                 query = "{{$el.SourceDefinition.Query}}"
                 field = "{{ $el.SourceDefinition.Field }}"
             }
+            {{end}}
+
+            {{- if eq $el.SourceDefinition.VariableSourceType "MetadataVariableSourceDefinition" }}
+            metadata_variable_source_definition {
+                filter = "{{$el.SourceDefinition.Filter}}"
+                key    = "{{ $el.SourceDefinition.Key}}"
+            }
+            {{end}}
+
+            {{- if eq $el.SourceDefinition.VariableSourceType "CsvVariableSourceDefinition" }}
+            csv_variable_source_definition {
+                values = "{{$el.SourceDefinition.Values}}"
+            }
+            {{end}}
         }
         allow_multi_select = "{{ $el.AllowMultiSelect }}"
         include_all_option = "{{ $el.IncludeAllOption }}"

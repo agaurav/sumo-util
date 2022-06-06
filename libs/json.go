@@ -56,6 +56,9 @@ func convertDashboardJSONToTF(jsonBytes []byte, outFile string) error {
 	if err != nil {
 		return err
 	}
+	//if _, err := os.Stat(outFile); os.IsExist(err) {
+	//	panic(fmt.Sprintf("the file to be created already '%s' already exists", outFile))
+	//}
 
 	return ioutil.WriteFile(outFile, buff.Bytes(), 0644)
 }

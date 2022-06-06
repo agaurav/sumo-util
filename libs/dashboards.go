@@ -85,17 +85,41 @@ type Layout struct {
 }
 
 type Queries struct {
-	Transient              bool        `json:"transient"`
-	QueryString            string      `json:"queryString"`
-	QueryType              string      `json:"queryType"`
-	QueryKey               string      `json:"queryKey"`
-	MetricsQueryMode       interface{} `json:"metricsQueryMode"`
-	MetricsQueryData       interface{} `json:"metricsQueryData"`
-	TracesQueryData        interface{} `json:"tracesQueryData"`
-	SpansQueryData         interface{} `json:"spansQueryData"`
-	ParseMode              string      `json:"parseMode"`
-	TimeSource             string      `json:"timeSource"`
-	OutputCardinalityLimit interface{} `json:"outputCardinalityLimit"`
+	Transient              bool             `json:"transient"`
+	QueryString            string           `json:"queryString"`
+	QueryType              string           `json:"queryType"`
+	QueryKey               string           `json:"queryKey"`
+	MetricsQueryMode       string           `json:"metricsQueryMode"`
+	MetricsQueryData       MetricsQueryData `json:"metricsQueryData"`
+	TracesQueryData        interface{}      `json:"tracesQueryData"`
+	SpansQueryData         interface{}      `json:"spansQueryData"`
+	ParseMode              string           `json:"parseMode"`
+	TimeSource             string           `json:"timeSource"`
+	OutputCardinalityLimit interface{}      `json:"outputCardinalityLimit"`
+}
+
+type MetricsQueryData struct {
+	Metric          string                 `json:"metric"`
+	AggregationType string                 `json:"aggregationType"`
+	GroupBy         string                 `json:"groupBy,omitempty"`
+	Filters         []MetricsQueryFilter   `json:"filters"`
+	Operators       []MetricsQueryOperator `json:"operators"`
+}
+
+type MetricsQueryFilter struct {
+	Key      string `json:"key"`
+	Value    string `json:"value"`
+	Negation bool   `json:"negation,omitempty"`
+}
+
+type MetricsQueryOperator struct {
+	Name       string                          `json:"operatorName"`
+	Parameters []MetricsQueryOperatorParameter `json:"parameters"`
+}
+
+type MetricsQueryOperatorParameter struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
 }
 
 type Panels struct {
@@ -117,6 +141,9 @@ type SourceDefinition struct {
 	VariableSourceType string `json:"variableSourceType"`
 	Query              string `json:"query"`
 	Field              string `json:"field"`
+	Key                string `json:"key"`
+	Filter             string `json:"filter"`
+	Values             string `json:"values"`
 }
 
 type Variables struct {
