@@ -1,7 +1,9 @@
 resource "sumologic_dashboard" "tf_{{.ResourceName}}" {
     title            = "{{.Title}}"
     description      = "{{.Description}}"
+    {{- if ne .RefreshInterval 0}}
     refresh_interval = "{{.RefreshInterval}}"
+    {{end}}
     theme            = "{{.Theme}}"
 
     {{ with $tr := .TimeRange }}
@@ -16,7 +18,7 @@ resource "sumologic_dashboard" "tf_{{.ResourceName}}" {
                 {{end}}
                 {{- if eq $tr.From.Type "RelativeTimeRangeBoundary" }}
                 relative_time_range {
-                    relative_time = "-{{$tr.From.RelativeTime}}"
+                    relative_time = "{{$tr.From.RelativeTime}}"
                 }
                 {{end}}
             }
@@ -30,6 +32,7 @@ resource "sumologic_dashboard" "tf_{{.ResourceName}}" {
     }
     {{end}}
 
+    {{if gt (len .TopologyLabelMap.Data) 0}}
     topology_label_map {
         {{ range $key, $value := .TopologyLabelMap.Data }}
         data {
@@ -40,6 +43,7 @@ resource "sumologic_dashboard" "tf_{{.ResourceName}}" {
         }
         {{ end }}
     }
+    {{end}}
 
 
     {{range $panel := .Panels}}
@@ -57,20 +61,20 @@ resource "sumologic_dashboard" "tf_{{.ResourceName}}" {
             keep_visual_settings_consistent_with_parent = true
             {{range $index, $el := $panel.Queries}}
             query {
-                query_string      = <<QUERY
+                query_string       = <<QUERY
 {{$el.QueryString}}
 QUERY
-                query_type        = "{{$el.QueryType}}"
-                query_key         = "{{$el.QueryKey}}"
-                {{-if ne $el.MetricsQueryMode ""}}
-                metric_query_mode = "{{$el.MetricsQueryMode}}"
+                query_type         = "{{$el.QueryType}}"
+                query_key          = "{{$el.QueryKey}}"
+                {{- if ne $el.MetricsQueryMode ""}}
+                metrics_query_mode = "{{$el.MetricsQueryMode}}"
                 {{end}}
 
-                {{-if or (eq $el.MetricsQueryMode "Basic") (eq $el.MetricsQueryMode "basic")}}
+                {{- if or (eq $el.MetricsQueryMode "Basic") (eq $el.MetricsQueryMode "basic")}}
                 metrics_query_data {
                     metric           = "{{$el.MetricsQueryData.Metric}}"
-                    aggregation_type = "{{el.MetricsQueryData.AggregationType}}"
-                    group_by         = "{{el.MetricsQueryData.GroupBy}}"
+                    aggregation_type = "{{$el.MetricsQueryData.AggregationType}}"
+                    group_by         = "{{$el.MetricsQueryData.GroupBy}}"
                     {{- range $index, $fltr := $el.MetricsQueryData.Filters}}
                     filter {
                         key      = "{{$fltr.Key}}"
@@ -89,11 +93,12 @@ QUERY
                         {{end}}
                     }
                     {{end}}
-                    {{end}}
                 }
+                {{end}}
             }
             {{end}}
             {{ with $tr := $panel.TimeRange }}
+            {{- if ne $tr.Type "" }}
             time_range {
                 {{- if eq $tr.Type "BeginBoundedTimeRange" }}
                 begin_bounded_time_range {
@@ -118,6 +123,7 @@ QUERY
                 {{end}}
             }
             {{end}}
+            {{end}}
         }
     }
     {{end}}
@@ -129,7 +135,7 @@ QUERY
             {{range $lt := .Layout.LayoutStructures}}
             layout_structure {
                 key       = "{{$lt.Key}}"
-                structure = {{ $.JSONEscape $lt.Structure}}
+                structure = "{{ $.JSONEscape $lt.Structure}}"
             }
             {{end}}
         }
@@ -144,14 +150,18 @@ QUERY
         source_definition {
             {{- if eq $el.SourceDefinition.VariableSourceType "LogQueryVariableSourceDefinition" }}
             log_query_variable_source_definition {
-                query = "{{$el.SourceDefinition.Query}}"
+                query = <<QUERY
+{{$el.SourceDefinition.Query}}
+QUERY
                 field = "{{ $el.SourceDefinition.Field }}"
             }
             {{end}}
 
             {{- if eq $el.SourceDefinition.VariableSourceType "MetadataVariableSourceDefinition" }}
             metadata_variable_source_definition {
-                filter = "{{$el.SourceDefinition.Filter}}"
+                filter = <<QUERY
+                {{$el.SourceDefinition.Filter}}
+QUERY
                 key    = "{{ $el.SourceDefinition.Key}}"
             }
             {{end}}

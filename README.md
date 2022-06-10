@@ -17,7 +17,7 @@ help           Help about any command
 
 
 #### currently supported content 
-- `dashboards`
+- `dashboards` (v2)
 
 todo 
 - `Monitors`

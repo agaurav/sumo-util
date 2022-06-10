@@ -1,0 +1,296 @@
+{
+    "type": "DashboardV2SyncDefinition",
+    "name": "Host Metrics - TCP",
+    "description": "The Host Metrics - TCP dashboard provides detailed information around inbound, outbound, open and established TCP connections.",
+    "title": "Host Metrics - TCP",
+    "theme": "Dark",
+    "topologyLabelMap": {
+        "data": {
+            "host.name": [
+                "*"
+            ]
+        }
+    },
+    "refreshInterval": 0,
+    "timeRange": {
+        "type": "BeginBoundedTimeRange",
+        "from": {
+            "type": "RelativeTimeRangeBoundary",
+            "relativeTime": "-1h"
+        },
+        "to": null
+    },
+    "layout": {
+        "layoutType": "Grid",
+        "layoutStructures": [
+            {
+                "key": "panelpane-17ee2e37b6eccb47",
+                "structure": "{\"height\":6,\"width\":12,\"x\":0,\"y\":0}"
+            },
+            {
+                "key": "panelpane-c24a86f4a132b84c",
+                "structure": "{\"height\":6,\"width\":12,\"x\":12,\"y\":0}"
+            },
+            {
+                "key": "panelpane-820b2a5db0d45848",
+                "structure": "{\"height\":6,\"width\":12,\"x\":0,\"y\":12}"
+            },
+            {
+                "key": "panelpane-d8ac2293bd568940",
+                "structure": "{\"height\":6,\"width\":12,\"x\":12,\"y\":12}"
+            },
+            {
+                "key": "panelpane-ef64ec5dbc991840",
+                "structure": "{\"height\":6,\"width\":12,\"x\":0,\"y\":18}"
+            },
+            {
+                "key": "panelpane-35dcff5392216a4f",
+                "structure": "{\"height\":6,\"width\":12,\"x\":12,\"y\":18}"
+            },
+            {
+                "key": "panelPANE-EC5685348CE70A41",
+                "structure": "{\"height\":6,\"width\":12,\"x\":0,\"y\":6}"
+            },
+            {
+                "key": "panelPANE-B10542A88EB87840",
+                "structure": "{\"height\":6,\"width\":12,\"x\":12,\"y\":6}"
+            }
+        ]
+    },
+    "panels": [
+        {
+            "id": null,
+            "key": "panelpane-17ee2e37b6eccb47",
+            "title": "Inbound Connections",
+            "visualSettings": "{\"general\":{\"mode\":\"timeSeries\"},\"color\":{\"family\":\"scheme7\"},\"axes\":{\"axisY\":{\"title\":\"Count\"}},\"overrides\":[{\"series\":[],\"queries\":[\"A\"],\"userProvidedChartType\":false,\"properties\":{\"type\":\"line\",\"name\":\"host={{host.name}}\"}}],\"series\":{},\"legend\":{\"enabled\":true,\"verticalAlign\":\"bottom\"}}",
+            "keepVisualSettingsConsistentWithParent": true,
+            "panelType": "SumoSearchPanel",
+            "queries": [
+                {
+                    "transient": false,
+                    "queryString": "_sourceCategory = Labs/host_and_process_metrics   host.name={{host.name}} metric=host_netstat field=tcp_syn_recv | avg by host.name ",
+                    "queryType": "Metrics",
+                    "queryKey": "A",
+                    "metricsQueryMode": "Advanced",
+                    "metricsQueryData": null,
+                    "tracesQueryData": null,
+                    "spansQueryData": null,
+                    "parseMode": "Auto",
+                    "timeSource": "Message",
+                    "outputCardinalityLimit": null
+                }
+            ],
+            "description": "",
+            "timeRange": null,
+            "coloringRules": null,
+            "linkedDashboards": []
+        },
+        {
+            "id": null,
+            "key": "panelpane-c24a86f4a132b84c",
+            "title": "Outbound Connections",
+            "visualSettings": "{\"general\":{\"mode\":\"timeSeries\"},\"color\":{\"family\":\"scheme7\"},\"axes\":{\"axisY\":{\"title\":\"Count\"}},\"overrides\":[{\"series\":[],\"queries\":[\"A\"],\"userProvidedChartType\":false,\"properties\":{\"name\":\"host={{host.name}} \"}}],\"series\":{},\"legend\":{\"enabled\":true,\"verticalAlign\":\"bottom\"}}",
+            "keepVisualSettingsConsistentWithParent": true,
+            "panelType": "SumoSearchPanel",
+            "queries": [
+                {
+                    "transient": false,
+                    "queryString": "_sourceCategory = Labs/host_and_process_metrics   host.name={{host.name}} metric=host_netstat field=tcp_syn_sent | avg by host.name ",
+                    "queryType": "Metrics",
+                    "queryKey": "A",
+                    "metricsQueryMode": "Advanced",
+                    "metricsQueryData": null,
+                    "tracesQueryData": null,
+                    "spansQueryData": null,
+                    "parseMode": "Auto",
+                    "timeSource": "Message",
+                    "outputCardinalityLimit": null
+                }
+            ],
+            "description": "",
+            "timeRange": null,
+            "coloringRules": null,
+            "linkedDashboards": []
+        },
+        {
+            "id": null,
+            "key": "panelpane-820b2a5db0d45848",
+            "title": "Listen Connections",
+            "visualSettings": "{\"general\":{\"mode\":\"timeSeries\"},\"color\":{\"family\":\"scheme7\"},\"axes\":{\"axisY\":{\"title\":\"Count\"}},\"overrides\":[{\"series\":[],\"queries\":[\"A\"],\"userProvidedChartType\":false,\"properties\":{\"type\":\"line\",\"name\":\"host={{host.name}} \"}}],\"series\":{},\"legend\":{\"enabled\":true,\"verticalAlign\":\"bottom\"}}",
+            "keepVisualSettingsConsistentWithParent": true,
+            "panelType": "SumoSearchPanel",
+            "queries": [
+                {
+                    "transient": false,
+                    "queryString": "_sourceCategory = Labs/host_and_process_metrics   host.name={{host.name}} metric=host_netstat field=tcp_listen | avg by host.name ",
+                    "queryType": "Metrics",
+                    "queryKey": "A",
+                    "metricsQueryMode": "Advanced",
+                    "metricsQueryData": null,
+                    "tracesQueryData": null,
+                    "spansQueryData": null,
+                    "parseMode": "Auto",
+                    "timeSource": "Message",
+                    "outputCardinalityLimit": null
+                }
+            ],
+            "description": "",
+            "timeRange": null,
+            "coloringRules": null,
+            "linkedDashboards": []
+        },
+        {
+            "id": null,
+            "key": "panelpane-d8ac2293bd568940",
+            "title": "Established Connections",
+            "visualSettings": "{\"general\":{\"mode\":\"timeSeries\"},\"color\":{\"family\":\"scheme7\"},\"axes\":{\"axisY\":{\"title\":\"Count\"}},\"overrides\":[{\"series\":[],\"queries\":[\"A\"],\"userProvidedChartType\":false,\"properties\":{\"type\":\"line\",\"name\":\"host={{host.name}} \"}}],\"series\":{},\"legend\":{\"enabled\":true,\"verticalAlign\":\"bottom\"}}",
+            "keepVisualSettingsConsistentWithParent": true,
+            "panelType": "SumoSearchPanel",
+            "queries": [
+                {
+                    "transient": false,
+                    "queryString": "_sourceCategory = Labs/host_and_process_metrics   host.name={{host.name}} metric=host_netstat field=tcp_established | avg by host.name ",
+                    "queryType": "Metrics",
+                    "queryKey": "A",
+                    "metricsQueryMode": "Advanced",
+                    "metricsQueryData": null,
+                    "tracesQueryData": null,
+                    "spansQueryData": null,
+                    "parseMode": "Auto",
+                    "timeSource": "Message",
+                    "outputCardinalityLimit": null
+                }
+            ],
+            "description": "",
+            "timeRange": null,
+            "coloringRules": null,
+            "linkedDashboards": []
+        },
+        {
+            "id": null,
+            "key": "panelpane-ef64ec5dbc991840",
+            "title": "CloseWait Connections",
+            "visualSettings": "{\"general\":{\"mode\":\"timeSeries\"},\"color\":{\"family\":\"scheme7\"},\"axes\":{\"axisY\":{\"title\":\"Count\"}},\"overrides\":[{\"series\":[],\"queries\":[\"A\"],\"userProvidedChartType\":false,\"properties\":{\"type\":\"line\",\"name\":\"host={{host.name}} \"}}],\"series\":{},\"legend\":{\"enabled\":true,\"verticalAlign\":\"bottom\"}}",
+            "keepVisualSettingsConsistentWithParent": true,
+            "panelType": "SumoSearchPanel",
+            "queries": [
+                {
+                    "transient": false,
+                    "queryString": "_sourceCategory = Labs/host_and_process_metrics   host.name={{host.name}} metric=host_netstat field=tcp_close_wait | avg by host.name ",
+                    "queryType": "Metrics",
+                    "queryKey": "A",
+                    "metricsQueryMode": "Advanced",
+                    "metricsQueryData": null,
+                    "tracesQueryData": null,
+                    "spansQueryData": null,
+                    "parseMode": "Auto",
+                    "timeSource": "Message",
+                    "outputCardinalityLimit": null
+                }
+            ],
+            "description": "",
+            "timeRange": null,
+            "coloringRules": null,
+            "linkedDashboards": []
+        },
+        {
+            "id": null,
+            "key": "panelpane-35dcff5392216a4f",
+            "title": "TimeWait Connections",
+            "visualSettings": "{\"general\":{\"mode\":\"timeSeries\"},\"color\":{\"family\":\"scheme7\"},\"axes\":{\"axisY\":{\"title\":\"Count\"}},\"overrides\":[{\"series\":[],\"queries\":[\"A\"],\"userProvidedChartType\":false,\"properties\":{\"type\":\"line\",\"name\":\"host={{host.name}} \"}}],\"series\":{},\"legend\":{\"enabled\":true,\"verticalAlign\":\"bottom\"}}",
+            "keepVisualSettingsConsistentWithParent": true,
+            "panelType": "SumoSearchPanel",
+            "queries": [
+                {
+                    "transient": false,
+                    "queryString": "_sourceCategory = Labs/host_and_process_metrics   host.name={{host.name}} metric=host_netstat field=tcp_time_wait | avg by host.name ",
+                    "queryType": "Metrics",
+                    "queryKey": "A",
+                    "metricsQueryMode": "Advanced",
+                    "metricsQueryData": null,
+                    "tracesQueryData": null,
+                    "spansQueryData": null,
+                    "parseMode": "Auto",
+                    "timeSource": "Message",
+                    "outputCardinalityLimit": null
+                }
+            ],
+            "description": "",
+            "timeRange": null,
+            "coloringRules": null,
+            "linkedDashboards": []
+        },
+        {
+            "id": null,
+            "key": "panelPANE-EC5685348CE70A41",
+            "title": "Idle Connections",
+            "visualSettings": "{\"general\":{\"mode\":\"timeSeries\",\"type\":\"line\",\"displayType\":\"default\",\"outlierBandColor\":\"#FDECF5\",\"outlierBandMarkerColor\":\"#F032A9\",\"outlierBandFillOpacity\":0.3,\"outlierBandLineThickness\":2,\"outlierBandMarkerSize\":10,\"outlierBandMarkerType\":\"triangle\",\"markerSize\":0,\"lineDashType\":\"solid\",\"markerType\":\"none\",\"lineThickness\":2},\"title\":{\"fontSize\":16},\"axes\":{\"axisX\":{\"title\":\"\",\"titleFontSize\":11,\"labelFontSize\":10},\"axisY\":{\"titleFontSize\":11,\"labelFontSize\":12,\"logarithmic\":false,\"gridColor\":\"#dde4e9\",\"title\":\"Count\"}},\"legend\":{\"enabled\":true,\"verticalAlign\":\"bottom\",\"fontSize\":12,\"maxHeight\":50,\"showAsTable\":false,\"wrap\":true},\"color\":{\"family\":\"scheme7\"},\"overrides\":[{\"series\":[],\"queries\":[\"A\"],\"userProvidedChartType\":false,\"properties\":{\"name\":\"host={{host.name}} \"}}],\"series\":{}}",
+            "keepVisualSettingsConsistentWithParent": true,
+            "panelType": "SumoSearchPanel",
+            "queries": [
+                {
+                    "transient": false,
+                    "queryString": "_sourceCategory = Labs/host_and_process_metrics   host.name={{host.name}} metric=host_netstat field=tcp_none | avg by host.name ",
+                    "queryType": "Metrics",
+                    "queryKey": "A",
+                    "metricsQueryMode": "Advanced",
+                    "metricsQueryData": null,
+                    "tracesQueryData": null,
+                    "spansQueryData": null,
+                    "parseMode": "Auto",
+                    "timeSource": "Message",
+                    "outputCardinalityLimit": null
+                }
+            ],
+            "description": "",
+            "timeRange": null,
+            "coloringRules": null,
+            "linkedDashboards": []
+        },
+        {
+            "id": null,
+            "key": "panelPANE-B10542A88EB87840",
+            "title": "Closed Connections",
+            "visualSettings": "{\"general\":{\"mode\":\"timeSeries\",\"type\":\"line\",\"displayType\":\"default\",\"outlierBandColor\":\"#FDECF5\",\"outlierBandMarkerColor\":\"#F032A9\",\"outlierBandFillOpacity\":0.3,\"outlierBandLineThickness\":2,\"outlierBandMarkerSize\":10,\"outlierBandMarkerType\":\"triangle\",\"markerSize\":0,\"lineDashType\":\"solid\",\"markerType\":\"none\",\"lineThickness\":2},\"title\":{\"fontSize\":16},\"axes\":{\"axisX\":{\"title\":\"\",\"titleFontSize\":11,\"labelFontSize\":10},\"axisY\":{\"titleFontSize\":11,\"labelFontSize\":12,\"logarithmic\":false,\"gridColor\":\"#dde4e9\",\"title\":\"Count\"}},\"legend\":{\"enabled\":true,\"verticalAlign\":\"bottom\",\"fontSize\":12,\"maxHeight\":50,\"showAsTable\":false,\"wrap\":true},\"color\":{\"family\":\"scheme7\"},\"overrides\":[{\"series\":[],\"queries\":[\"A\"],\"userProvidedChartType\":false,\"properties\":{\"name\":\"host={{host.name}} \"}}],\"series\":{}}",
+            "keepVisualSettingsConsistentWithParent": true,
+            "panelType": "SumoSearchPanel",
+            "queries": [
+                {
+                    "transient": false,
+                    "queryString": "_sourceCategory = Labs/host_and_process_metrics   host.name={{host.name}} metric=host_netstat field=tcp_close | avg by host.name ",
+                    "queryType": "Metrics",
+                    "queryKey": "A",
+                    "metricsQueryMode": "Advanced",
+                    "metricsQueryData": null,
+                    "tracesQueryData": null,
+                    "spansQueryData": null,
+                    "parseMode": "Auto",
+                    "timeSource": "Message",
+                    "outputCardinalityLimit": null
+                }
+            ],
+            "description": "",
+            "timeRange": null,
+            "coloringRules": null,
+            "linkedDashboards": []
+        }
+    ],
+    "variables": [
+        {
+            "id": null,
+            "name": "host.name",
+            "displayName": "host.name",
+            "defaultValue": "*",
+            "sourceDefinition": {
+                "variableSourceType": "MetadataVariableSourceDefinition",
+                "filter": "_sourceCategory = Labs/host_and_process_metrics  ",
+                "key": "host.name"
+            },
+            "allowMultiSelect": false,
+            "includeAllOption": true,
+            "hideFromUI": false,
+            "valueType": "Any"
+        }
+    ],
+    "coloringRules": []
+}

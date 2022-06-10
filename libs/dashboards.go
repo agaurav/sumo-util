@@ -51,7 +51,7 @@ func (d Dashboard) JSONEscape(in string) string {
 		panic(err)
 	}
 
-	return string(bytes)
+	return string(bytes)[1 : len(string(bytes))-1]
 }
 
 type Data struct {
