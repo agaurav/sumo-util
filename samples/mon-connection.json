@@ -1,0 +1,55 @@
+{
+  "name": "long_search_histogram_rendering_time_out_of_slo (Copy)",
+  "description": "long: Rendering time of Search histogram is out of SLO for last 24 hours data. Playbook: https://github.com/Sanyaku/codelabs/blob/master/ui/pages/search/search-performance-monitoring-debugging.md",
+  "type": "MonitorsLibraryMonitorExport",
+  "monitorType": "Logs",
+  "evaluationDelay": "0m",
+  "alertName": null,
+  "runAs": null,
+  "notificationGroupFields": [],
+  "queries": [
+    {
+      "rowId": "A",
+      "query": "_sourcecategory=service (\"[module=search]\" AND \"[_type=perf]\" AND \"[step=search_histogram_first_result]\") \n| parse \"[searchQueryId=*]\" as searchQueryId \n| parse \"[duration=*]\" as duration \n| num(duration) as duration \n| if(duration > 500, 1, 0) as outOfSLO \n| timeslice 1d \n| count, sum(outOfSLO) as totalViolations by _timeslice \n| (totalViolations / _count) * 100 * 100 as ViolationsPercent \n| fields -_count, totalViolations\n"
+    }
+  ],
+  "triggers": [
+    {
+      "detectionMethod": "LogsOutlierCondition",
+      "triggerType": "Critical",
+      "resolutionWindow": null,
+      "window": 50,
+      "consecutive": 5,
+      "direction": "Both",
+      "threshold": 10,
+      "field": "ViolationsPercent"
+    },
+    {
+      "detectionMethod": "LogsOutlierCondition",
+      "triggerType": "ResolvedCritical",
+      "resolutionWindow": null,
+      "window": 50,
+      "consecutive": 5,
+      "direction": "Both",
+      "threshold": 10,
+      "field": "ViolationsPercent"
+    }
+  ],
+  "notifications": [
+    {
+      "notification": {
+        "connectionType": "PagerDuty",
+        "connectionId": "000000000001234",
+        "payloadOverride": null
+      },
+      "runForTriggerTypes": [
+        "Critical",
+        "ResolvedCritical"
+      ]
+    }
+  ],
+  "isDisabled": true,
+  "groupNotifications": true,
+  "playbook": "",
+  "sloId": null
+}

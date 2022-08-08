@@ -10,7 +10,11 @@ import (
 //go:embed templates/dashboards.gotf
 var dashboardTemplateStr string
 
+//go:embed templates/monitors.gotf
+var monitorsTemplateStr string
+
 var dashboardTemplate *template.Template
+var monitorsTemplate *template.Template
 
 func init() {
 	var err error
@@ -18,6 +22,12 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+
+	monitorsTemplate, err = template.New("monitors").Parse(monitorsTemplateStr)
+	if err != nil {
+		panic(err)
+	}
+
 }
 
 func DashboardTemplate() (*template.Template, error) {

@@ -1,0 +1,87 @@
+{
+  "name": "slo-drift-delay-10m_1h",
+  "description": "checks anomalies are being calculated and with acceptable delays",
+  "type": "MonitorsLibraryMonitorExport",
+  "monitorType": "Logs",
+  "evaluationDelay": "5m",
+  "alertName": null,
+  "runAs": null,
+  "notificationGroupFields": [],
+  "queries": [
+    {
+      "rowId": "A",
+      "query": "_view=slogen_tf_slg_srv_drift_delay\n| timeslice 10m \n| sum(sliceGoodCount) as tmGood, sum(sliceTotalCount) as tmCount  group by _timeslice\n| fillmissing timeslice(1m)\n| tmGood/tmCount as tmSLO \n| (tmCount-tmGood) as tmBad \n| total tmCount as totalCount  \n| totalCount*(1-0) as errorBudget\n| ((tmBad/tmCount)/(1-0)) as sliceBurnRate\n| if(queryEndTime() - _timeslice <= 10m,sliceBurnRate, 0  )  as latestBurnRate \n| sum(tmGood) as totalGood, max(totalCount) as totalCount, max(latestBurnRate) as latestBurnRate \n| (1-(totalGood/totalCount))/(1-0) as longBurnRate\n| if (longBurnRate > 14 , 1,0) as long_burn_exceeded\n| if ( latestBurnRate > 14, 1,0) as short_burn_exceeded\n| long_burn_exceeded + short_burn_exceeded as combined_burn\n\n"
+    }
+  ],
+  "triggers": [
+    {
+      "detectionMethod": "LogsStaticCondition",
+      "triggerType": "Critical",
+      "resolutionWindow": null,
+      "timeRange": "-1h",
+      "threshold": 2,
+      "thresholdType": "GreaterThan",
+      "field": "combined_burn"
+    },
+    {
+      "detectionMethod": "LogsStaticCondition",
+      "triggerType": "ResolvedCritical",
+      "resolutionWindow": null,
+      "timeRange": "-1h",
+      "threshold": 2,
+      "thresholdType": "LessThanOrEqual",
+      "field": "combined_burn"
+    },
+    {
+      "detectionMethod": "LogsStaticCondition",
+      "triggerType": "Warning",
+      "resolutionWindow": null,
+      "timeRange": "-1h",
+      "threshold": 1,
+      "thresholdType": "GreaterThan",
+      "field": "combined_burn"
+    },
+    {
+      "detectionMethod": "LogsStaticCondition",
+      "triggerType": "ResolvedWarning",
+      "resolutionWindow": null,
+      "timeRange": "-1h",
+      "threshold": 1,
+      "thresholdType": "LessThanOrEqual",
+      "field": "combined_burn"
+    },
+    {
+      "detectionMethod": "LogsMissingDataCondition",
+      "triggerType": "MissingData",
+      "resolutionWindow": null,
+      "timeRange": "-30m"
+    },
+    {
+      "detectionMethod": "LogsMissingDataCondition",
+      "triggerType": "ResolvedMissingData",
+      "resolutionWindow": null,
+      "timeRange": "-30m"
+    }
+  ],
+  "notifications": [
+    {
+      "notification": {
+        "connectionType": "Email",
+        "recipients": [
+          "agaurav@sumologic.com"
+        ],
+        "subject": "SLO breach alert: slg-srv - drift-delay",
+        "messageBody": "{{Description}} \n Result : {{ResultsJson}}\n Alert: {{AlertResponseURL}}",
+        "timeZone": "PST"
+      },
+      "runForTriggerTypes": [
+        "Warning",
+        "ResolvedWarning"
+      ]
+    }
+  ],
+  "isDisabled": false,
+  "groupNotifications": true,
+  "playbook": "",
+  "sloId": null
+}

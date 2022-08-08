@@ -8,7 +8,10 @@ import (
 
 func init() {
 	rootCmd.AddCommand(json2tfCmd)
+	json2tfCmd.Flags().String(FlagOutputShort, "", "output file")
 }
+
+const FlagOutputShort = "o"
 
 var json2tfCmd = &cobra.Command{
 	Use:   "json2tf",
@@ -17,7 +20,14 @@ var json2tfCmd = &cobra.Command{
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 
-		out, err := os.Getwd()
+		out, err := cmd.Flags().GetString(FlagOutputShort)
+		if err != nil {
+			panic(err)
+		}
+
+		if out == "" {
+			out, err = os.Getwd()
+		}
 
 		if err != nil {
 			panic(err)
