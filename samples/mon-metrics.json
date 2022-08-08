@@ -1,0 +1,59 @@
+{
+  "name": "metric test",
+  "description": "",
+  "type": "MonitorsLibraryMonitorExport",
+  "monitorType": "Metrics",
+  "evaluationDelay": "0m",
+  "alertName": null,
+  "runAs": null,
+  "notificationGroupFields": [
+    "metric"
+  ],
+  "queries": [
+    {
+      "rowId": "A",
+      "query": "_sourceCategory=monitor-manager metric=CPU* | avg by metric"
+    }
+  ],
+  "triggers": [
+    {
+      "detectionMethod": "MetricsStaticCondition",
+      "triggerType": "Critical",
+      "resolutionWindow": null,
+      "timeRange": "-15m",
+      "threshold": 6,
+      "thresholdType": "GreaterThan",
+      "occurrenceType": "AtLeastOnce"
+    },
+    {
+      "detectionMethod": "MetricsStaticCondition",
+      "triggerType": "ResolvedCritical",
+      "resolutionWindow": null,
+      "timeRange": "-15m",
+      "threshold": 6,
+      "thresholdType": "LessThanOrEqual",
+      "occurrenceType": "Always"
+    }
+  ],
+  "notifications": [
+    {
+      "notification": {
+        "connectionType": "Email",
+        "recipients": [
+          "agaurav@sumologic.com"
+        ],
+        "subject": "Monitor Alert: {{TriggerType}} on {{AlertName}}",
+        "messageBody": "",
+        "timeZone": "America/Los_Angeles"
+      },
+      "runForTriggerTypes": [
+        "Critical",
+        "ResolvedCritical"
+      ]
+    }
+  ],
+  "isDisabled": false,
+  "groupNotifications": true,
+  "playbook": "",
+  "sloId": null
+}

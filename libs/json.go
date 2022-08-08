@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/buger/jsonparser"
+	"github.com/kr/pretty"
 	"io/ioutil"
 	"path/filepath"
 )
@@ -28,7 +29,10 @@ func ConvertToTF(path string, out string) error {
 		return err
 	}
 
-	outFileName := filepath.Join(out, giveTFFileName(path))
+	outFileName := out
+	if out[len(out)-3:] != ".tf" {
+		outFileName = filepath.Join(out, giveTFFileName(path))
+	}
 
 	switch contentType {
 	case ContentTypeDashboard:
@@ -52,7 +56,7 @@ func convertDashboardJSONToTF(jsonBytes []byte, outFile string) error {
 	}
 	buff := &bytes.Buffer{}
 
-	err = dashboardTemplate.Execute(buff, dashObj)
+	err = monitorsTemplate.Execute(buff, dashObj)
 	if err != nil {
 		return err
 	}
@@ -64,7 +68,23 @@ func convertDashboardJSONToTF(jsonBytes []byte, outFile string) error {
 }
 
 func convertMonitorsJSONToTF(jsonBytes []byte, outFile string) error {
-	return nil
+	monObj := Monitors{}
+	err := json.Unmarshal(jsonBytes, &monObj)
+
+	pretty.Println(monObj, monObj.TriggersClubbed())
+
+	if err != nil {
+		return err
+	}
+
+	buff := &bytes.Buffer{}
+	err = monitorsTemplate.Execute(buff, monObj)
+
+	if err != nil {
+		return err
+	}
+
+	return ioutil.WriteFile(outFile, buff.Bytes(), 0644)
 }
 
 func giveTFFileName(path string) string {

@@ -1,43 +1,59 @@
 {
-  "name": "TK missing data",
+  "name": "tsat_drift_gen_Rolling_High-Burn-Rate",
   "description": "",
   "type": "MonitorsLibraryMonitorExport",
-  "monitorType": "Metrics",
-  "evaluationDelay": "0m",
+  "monitorType": "Slo",
+  "evaluationDelay": "5m",
   "alertName": null,
   "runAs": null,
   "notificationGroupFields": [],
-  "queries": [
-    {
-      "rowId": "A",
-      "query": "_sourcecategory=search metric=CPU_User "
-    }
-  ],
+  "queries": [],
   "triggers": [
     {
-      "detectionMethod": "StaticCondition",
-      "triggerType": "MissingData",
-      "timeRange": "-5m",
-      "threshold": 0,
-      "thresholdType": "LessThanOrEqual",
-      "field": null,
-      "occurrenceType": "MissingData",
-      "triggerSource": "AllTimeSeries"
+      "detectionMethod": "SloBurnRateCondition",
+      "triggerType": "Critical",
+      "resolutionWindow": null,
+      "burnRateThreshold": 4,
+      "timeRange": "-1h"
     },
     {
-      "detectionMethod": "StaticCondition",
-      "triggerType": "ResolvedMissingData",
-      "timeRange": "-5m",
-      "threshold": 0,
-      "thresholdType": "GreaterThan",
-      "field": null,
-      "occurrenceType": "MissingData",
-      "triggerSource": "AllTimeSeries"
+      "detectionMethod": "SloBurnRateCondition",
+      "triggerType": "Warning",
+      "resolutionWindow": null,
+      "burnRateThreshold": 2,
+      "timeRange": "-1h"
     }
   ],
-  "notifications": [],
+  "notifications": [
+    {
+      "notification": {
+        "connectionType": "Email",
+        "recipients": [
+          "agaurav@sumologic.com"
+        ],
+        "subject": "Monitor Alert: {{TriggerType}} on {{Name}}",
+        "messageBody": "",
+        "timeZone": ""
+      },
+      "runForTriggerTypes": [
+        "Critical",
+        "ResolvedCritical"
+      ]
+    },
+    {
+      "notification": {
+        "connectionType": "Webhook",
+        "connectionId": "0000000000000431",
+        "payloadOverride": null
+      },
+      "runForTriggerTypes": [
+        "Critical",
+        "ResolvedCritical"
+      ]
+    }
+  ],
   "isDisabled": false,
   "groupNotifications": true,
   "playbook": "",
-  "sloId": null
+  "sloId": "00000000000000BA"
 }

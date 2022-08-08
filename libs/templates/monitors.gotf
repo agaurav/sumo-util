@@ -1,0 +1,237 @@
+resource "sumologic_monitor" "tf_{{.ResourceName}}" {
+    name         = "{{.Name}}"
+    description      = "{{.Description}}"
+    type         = "MonitorsLibraryMonitor"
+    is_disabled  = "{{.IsDisabled}}"
+    content_type = "Monitor"
+    monitor_type = "{{.MonitorType}}"
+    evaluation_delay = "{{.EvaluationDelay}}"
+    playbook = "{{.Playbook}}"
+    alert_name = "{{.AlertName}}"
+    notification_group_fields = [
+        {{- range $ngf := .NotificationGroupFields }}
+        "{{$ngf}}",
+        {{- end}}
+    ]
+
+    {{- range $q := .Queries}}
+    queries {
+        row_id = "{{$q.RowID}}"
+        query         = <<QUERY
+{{$q.Query}}
+QUERY
+    }
+    {{end}}
+
+    trigger_conditions {
+        {{- range $triggerType, $tc := .TriggersClubbed}}
+        {{- if eq $triggerType "LogsStaticCondition"}}
+        logs_static_condition {
+            field = "{{$tc.Field}}"
+
+            {{- if $tc.Critical }}
+            critical {
+                time_range = "{{$tc.Critical.TimeRange}}"
+                alert {
+                    threshold      = "{{$tc.Critical.Threshold}}"
+                    threshold_type = "{{$tc.Critical.ThresholdType}}"
+                }
+                {{if $tc.ResolvedCritical }}
+                resolution {
+                    threshold      = "{{$tc.ResolvedCritical.Threshold}}"
+                    threshold_type = "{{$tc.ResolvedCritical.ThresholdType}}"
+                }
+                {{end}}
+            }
+            {{end}}
+            {{if $tc.Warning }}
+            warning {
+                time_range = "{{$tc.Warning.TimeRange}}"
+                alert {
+                    threshold      = "{{$tc.Warning.Threshold}}"
+                    threshold_type = "{{$tc.Warning.ThresholdType}}"
+                }
+                {{if $tc.ResolvedWarning }}
+                resolution {
+                    threshold      = "{{$tc.ResolvedWarning.Threshold}}"
+                    threshold_type = "{{$tc.ResolvedWarning.ThresholdType}}"
+                }
+                {{end}}
+            }
+            {{end}}
+        }
+        {{end}}
+
+        {{- if eq $triggerType "MetricsStaticCondition"}}
+        metrics_static_condition {
+            {{- if $tc.Critical }}
+            critical {
+                time_range = "{{$tc.Critical.TimeRange}}"
+                occurrence_type = "{{$tc.Critical.OccurrenceType}}"
+                alert {
+                    threshold      = "{{$tc.Critical.Threshold}}"
+                    threshold_type = "{{$tc.Critical.ThresholdType}}"
+                }
+                {{if $tc.ResolvedCritical }}
+                resolution {
+                    threshold      = "{{$tc.ResolvedCritical.Threshold}}"
+                    threshold_type = "{{$tc.ResolvedCritical.ThresholdType}}"
+                }
+                {{end}}
+            }
+            {{end}}
+
+            {{if $tc.Warning }}
+            warning {
+                time_range = "{{$tc.Warning.TimeRange}}"
+                occurrence_type = "{{$tc.Warning.OccurrenceType}}"
+                alert {
+                    threshold      = "{{$tc.Warning.Threshold}}"
+                    threshold_type = "{{$tc.Warning.ThresholdType}}"
+                }
+                {{if $tc.ResolvedWarning }}
+                resolution {
+                    threshold      = "{{$tc.ResolvedWarning.Threshold}}"
+                    threshold_type = "{{$tc.ResolvedWarning.ThresholdType}}"
+                }
+                {{end}}
+            }
+            {{end}}
+        }
+        {{end}}
+
+        {{- if eq $triggerType "LogsOutlierCondition"}}
+        logs_outlier_condition {
+            field = "{{$tc.Field}}"
+            direction = "{{$tc.Direction}}"
+
+            {{- if $tc.Critical }}
+            critical {
+                window = "{{$tc.Critical.Window}}"
+                consecutive = "{{$tc.Critical.Consecutive}}"
+                threshold = "{{$tc.Critical.Threshold}}"
+            }
+            {{end}}
+
+            {{if $tc.Warning }}
+            warning {
+                window = "{{$tc.Warning.Window}}"
+                consecutive = "{{$tc.Warning.Consecutive}}"
+                threshold = "{{$tc.Warning.Threshold}}"
+            }
+            {{end}}
+        }
+        {{end}}
+
+        {{- if eq $triggerType "MetricsOutlierCondition"}}
+        metrics_outlier_condition {
+            direction = "{{$tc.Direction}}"
+
+            {{- if $tc.Critical }}
+            critical {
+                baseline_window = "{{$tc.Critical.Window}}"
+                threshold = "{{$tc.Critical.Threshold}}"
+            }
+            {{end}}
+
+            {{if $tc.Warning }}
+            warning {
+                baseline_window = "{{$tc.Warning.Window}}"
+                threshold = "{{$tc.Warning.Threshold}}"
+            }
+            {{end}}
+        }
+        {{end}}
+
+        {{- if eq $triggerType "LogsMissingDataCondition"}}
+        logs_missing_data_condition {
+            time_range = "{{$tc.TimeRange}}"
+        }
+        {{ end }}
+
+        {{- if eq $triggerType "MetricsMissingDataCondition"}}
+        metrics_missing_data_condition {
+            time_range = "{{$tc.TimeRange}}"
+            trigger_source = "{{$tc.TriggerSource}}"
+        }
+        {{ end }}
+
+        {{- if eq $triggerType "SloSliCondition"}}
+        slo_sli_condition {
+            {{- if $tc.Critical }}
+            critical {
+                sli_threshold = "{{$tc.Critical.Threshold}}"
+            }
+            {{end}}
+
+            {{if $tc.Warning }}
+            warning {
+                sli_threshold = "{{$tc.Warning.Threshold}}"
+            }
+            {{end}}
+        }
+        {{end}}
+
+        {{- if eq $triggerType "SloBurnRateCondition"}}
+        slo_burn_rate_condition {
+            {{- if $tc.Critical }}
+            critical {
+                time_range = "{{$tc.Critical.TimeRange}}"
+                burn_rate_threshold= "{{$tc.Critical.Threshold}}"
+            }
+            {{end}}
+
+            {{if $tc.Warning }}
+            warning {
+                time_range = "{{$tc.Warning.TimeRange}}"
+                burn_rate_threshold= "{{$tc.Warning.Threshold}}"
+            }
+            {{end}}
+        }
+        {{end}}
+
+        {{end}}
+    }
+
+    {{- range $n := .GetNotifyEmails}}
+    notifications {
+        notification {
+            connection_type = "Email"
+            recipients = [
+                {{- range $mailId := $n.Notification.Recipients}}
+                "{{$mailId}}",
+                {{- end}}
+            ]
+            subject      = "{{$n.Notification.Subject}}"
+            time_zone    = "{{$n.Notification.TimeZone}}"
+            message_body = <<BODY
+{{$n.Notification.MessageBody}}
+BODY
+        }
+        run_for_trigger_types = [
+            {{- range $t := $n.RunForTriggerTypes}}
+            "{{$t}}",
+            {{- end}}
+        ]
+    }
+    {{ end }}
+
+    {{- range $n := .GetNotifyConnections}}
+    notifications {
+        notification {
+            connection_type = "{{$n.Notification.ConnectionType}}"
+            connection_id   = "{{$n.Notification.ConnectionID}}"
+{{- if ne $n.Notification.PayloadOverride  ""}}
+            payload_override = <<JSON
+{{$n.Notification.PayloadOverride}}
+JSON
+{{end}}
+        }
+        run_for_trigger_types = [
+            {{- range $t := $n.RunForTriggerTypes}}
+            "{{$t}}",
+            {{- end}}
+        ]
+    }
+    {{ end }}
+}

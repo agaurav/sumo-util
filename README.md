@@ -6,7 +6,16 @@ e.g. usage
 sumo-util json2tf dashboard.json
 ```
 
-the above will create a respective `dashboard.tf` file where the command was invoked.
+the above will create a respective `dashboard.tf` file in the directory where the command was invoked.
+
+To specify output directory or file use the `-o` flag.
+
+``` shell
+sumo-util json2tf dashboard.json -o ../tf_dash
+sumo-util json2tf monitor.json -o ../tf/mon.tf
+```
+
+``` shell
 
 #### Available Commands:
 ``` shell
@@ -18,9 +27,9 @@ help           Help about any command
 
 #### currently supported content 
 - `dashboards` (v2)
+- `Monitors`
 
 todo 
-- `Monitors`
 - `SLOs`
 
 
