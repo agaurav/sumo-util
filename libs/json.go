@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/buger/jsonparser"
-	"github.com/kr/pretty"
 	"io/ioutil"
 	"path/filepath"
 )
@@ -71,7 +70,7 @@ func convertMonitorsJSONToTF(jsonBytes []byte, outFile string) error {
 	monObj := Monitors{}
 	err := json.Unmarshal(jsonBytes, &monObj)
 
-	pretty.Println(monObj, monObj.TriggersClubbed())
+	//pretty.Println(monObj, monObj.TriggersClubbed())
 
 	if err != nil {
 		return err
