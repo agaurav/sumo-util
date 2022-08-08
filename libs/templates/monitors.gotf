@@ -7,7 +7,7 @@ resource "sumologic_monitor" "tf_{{.ResourceName}}" {
     monitor_type = "{{.MonitorType}}"
     evaluation_delay = "{{.EvaluationDelay}}"
     playbook = "{{.Playbook}}"
-    {{- if ne .AlertName "" }}
+    {{- if and (ne .AlertName "") (ne .AlertName "<no value>") }}
     alert_name = "{{.AlertName}}"
     {{ end }}
     {{- if .NotificationGroupFields }}
