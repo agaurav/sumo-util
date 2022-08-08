@@ -1,6 +1,18 @@
-#### utility commands line tool for sumologic content
+### utility command line tool for sumologic content
 
-e.g. usage 
+#### installation 
+```shell
+go install github.com/agaurav/sumo-util@v0.0.7
+```
+
+or downaload the latest binary for your system from [release page](https://github.com/agaurav/sumo-util/releases) 
+```
+wget -O - https://github.com/agaurav/sumo-util/releases/download/v0.0.7/sumo-util.7.11_Linux_x86_64.tar.gz | tar xvz -C /path/to/bin
+```
+
+
+
+#### usage 
 
 ``` shell
 sumo-util json2tf dashboard.json
