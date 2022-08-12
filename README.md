@@ -2,12 +2,12 @@
 
 #### installation 
 ```shell
-go install github.com/agaurav/sumo-util@v0.0.7
+go install github.com/agaurav/sumo-util@v0.1.1
 ```
 
 or downaload the latest binary for your system from [release page](https://github.com/agaurav/sumo-util/releases) 
 ```
-wget -O - https://github.com/agaurav/sumo-util/releases/download/v0.0.7/sumo-util_0.0.7_Linux_x86_64.tar.gz | tar xvz -C /path/to/bin
+wget -O - https://github.com/agaurav/sumo-util/releases/download/v0.1.0/sumo-util_0.1.1_Linux_x86_64.tar.gz | tar xvz -C /path/to/bin
 ```
 
 
