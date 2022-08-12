@@ -8,10 +8,11 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "sumo-util",
-	Short: "utility commands tool for sumologic users",
-	Long:  ``,
-	Run:   func(cmd *cobra.Command, args []string) {},
+	Use:     "sumo-util",
+	Short:   "utility commands tool for sumologic users",
+	Version: Version,
+	Long:    ``,
+	Run:     func(cmd *cobra.Command, args []string) {},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

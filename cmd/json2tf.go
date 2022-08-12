@@ -19,6 +19,7 @@ var json2tfCmd = &cobra.Command{
 	Long:  `convert exported json from sumo ui to terraform`,
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+		cmd.Version = Version
 
 		out, err := cmd.Flags().GetString(FlagOutputShort)
 		if err != nil {

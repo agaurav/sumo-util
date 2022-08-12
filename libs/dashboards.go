@@ -30,10 +30,6 @@ func init() {
 
 }
 
-func DashboardTemplate() (*template.Template, error) {
-	return template.New("sumo-dashboard").Parse(dashboardTemplateStr)
-}
-
 type Dashboard struct {
 	Type             string         `json:"type"`
 	Name             string         `json:"name"`

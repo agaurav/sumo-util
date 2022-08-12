@@ -46,6 +46,7 @@ func ConvertToTF(path string, out string) error {
 }
 
 func convertDashboardJSONToTF(jsonBytes []byte, outFile string) error {
+
 	dashObj := Dashboard{}
 
 	err := json.Unmarshal(jsonBytes, &dashObj)
@@ -55,7 +56,9 @@ func convertDashboardJSONToTF(jsonBytes []byte, outFile string) error {
 	}
 	buff := &bytes.Buffer{}
 
-	err = monitorsTemplate.Execute(buff, dashObj)
+	fmt.Printf("\nconverting dashboard `%s` to tf file: %s\n", dashObj.Name, outFile)
+
+	err = dashboardTemplate.Execute(buff, dashObj)
 	if err != nil {
 		return err
 	}
@@ -67,6 +70,7 @@ func convertDashboardJSONToTF(jsonBytes []byte, outFile string) error {
 }
 
 func convertMonitorsJSONToTF(jsonBytes []byte, outFile string) error {
+
 	monObj := Monitors{}
 	err := json.Unmarshal(jsonBytes, &monObj)
 
@@ -75,6 +79,8 @@ func convertMonitorsJSONToTF(jsonBytes []byte, outFile string) error {
 	if err != nil {
 		return err
 	}
+
+	fmt.Printf("\nconverting monitor `%s` to tf file: %s\n", monObj.Name, outFile)
 
 	buff := &bytes.Buffer{}
 	err = monitorsTemplate.Execute(buff, monObj)
