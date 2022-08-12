@@ -18,6 +18,7 @@ func init() {
 }
 
 func main() {
+
 	//fmt.Printf("sumo-util version %s\n\n", Version)
 	cmd.Execute()
 }

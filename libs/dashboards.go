@@ -75,9 +75,10 @@ type From struct {
 }
 
 type TimeRange struct {
-	Type string      `json:"type"`
-	From From        `json:"from"`
-	To   interface{} `json:"to"`
+	Type      string      `json:"type"`
+	RangeName string      `json:"rangeName"`
+	From      From        `json:"from"`
+	To        interface{} `json:"to"`
 }
 
 type LayoutStructures struct {

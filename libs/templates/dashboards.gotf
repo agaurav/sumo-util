@@ -3,10 +3,9 @@ resource "sumologic_dashboard" "tf_{{.ResourceName}}" {
     description      = "{{.Description}}"
     {{- if ne .RefreshInterval 0}}
     refresh_interval = "{{.RefreshInterval}}"
-    {{end}}
+    {{- end}}
     theme            = "{{.Theme}}"
-
-    {{ with $tr := .TimeRange }}
+    {{- with $tr := .TimeRange }}
     time_range {
         {{- if eq $tr.Type "BeginBoundedTimeRange" }}
         begin_bounded_time_range {
@@ -23,16 +22,16 @@ resource "sumologic_dashboard" "tf_{{.ResourceName}}" {
                 {{end}}
             }
         }
-        {{end}}
+        {{- end}}
         {{- if eq $tr.Type "CompleteLiteralTimeRange" }}
         complete_literal_time_range {
-            range_name = "{{$tr.From.RangeName}}"
+            range_name = "{{$tr.RangeName}}"
         }
-        {{end}}
+        {{- end}}
     }
-    {{end}}
+    {{- end}}
 
-    {{if gt (len .TopologyLabelMap.Data) 0}}
+    {{- if gt (len .TopologyLabelMap.Data) 0}}
     topology_label_map {
         {{ range $key, $value := .TopologyLabelMap.Data }}
         data {
@@ -43,12 +42,12 @@ resource "sumologic_dashboard" "tf_{{.ResourceName}}" {
         }
         {{ end }}
     }
-    {{end}}
+    {{- end}}
 
+{{- range $panel := .Panels }}
 
-    {{range $panel := .Panels}}
     ## search panel - log query
-    {{if eq $panel.PanelType "SumoSearchPanel"}}
+    {{- if eq $panel.PanelType "SumoSearchPanel"}}
     panel {
         sumo_search_panel {
             key             = "{{$panel.Key}}"
@@ -59,7 +58,7 @@ resource "sumologic_dashboard" "tf_{{.ResourceName}}" {
                 {{$panel.VisualSettings}}
             )
             keep_visual_settings_consistent_with_parent = true
-            {{range $index, $el := $panel.Queries}}
+            {{- range $index, $el := $panel.Queries}}
             query {
                 query_string       = <<QUERY
 {{$el.QueryString}}
@@ -68,7 +67,7 @@ QUERY
                 query_key          = "{{$el.QueryKey}}"
                 {{- if ne $el.MetricsQueryMode ""}}
                 metrics_query_mode = "{{$el.MetricsQueryMode}}"
-                {{end}}
+                {{- end}}
 
                 {{- if or (eq $el.MetricsQueryMode "Basic") (eq $el.MetricsQueryMode "basic")}}
                 metrics_query_data {
@@ -94,10 +93,10 @@ QUERY
                     }
                     {{end}}
                 }
-                {{end}}
+                {{- end}}
             }
-            {{end}}
-            {{ with $tr := $panel.TimeRange }}
+            {{- end}}
+            {{- with $tr := $panel.TimeRange }}
             {{- if ne $tr.Type "" }}
             time_range {
                 {{- if eq $tr.Type "BeginBoundedTimeRange" }}
@@ -115,19 +114,36 @@ QUERY
                         {{end}}
                     }
                 }
-                {{end}}
+                {{- end}}
+
                 {{- if eq $.Type "CompleteLiteralTimeRange" }}
                 complete_literal_time_range {
                     range_name = "{{.From.RangeName}}"
                 }
-                {{end}}
+                {{- end}}
             }
-            {{end}}
-            {{end}}
+            {{- end}}
+            {{- end}}
         }
     }
-    {{end}}
-    {{end}}
+    {{- end}}
+
+    {{- if eq $panel.PanelType "TextPanel"}}
+    panel {
+        text_panel {
+            key             = "{{$panel.Key}}"
+            title           = "{{$panel.Title}}"
+            text            = <<TEXT
+{{$panel.Text}}
+TEXT
+            visual_settings = jsonencode(
+                {{$panel.VisualSettings}}
+            )
+            keep_visual_settings_consistent_with_parent = "{{$panel.KeepVisualSettingsConsistentWithParent}}"
+        }
+    }
+    {{- end}}
+{{- end}}
 
     ## layout
     layout {
